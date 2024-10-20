@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   545: {
     QuestionMarkGame: {
-      address: "0x1266931A43d8784388D75affBcF9EB4328E02607",
+      address: "0xb1463d8BA1908464B0A193269baD7313b97c2Cf5",
       abi: [
         {
           inputs: [
@@ -132,7 +132,7 @@ const deployedContracts = {
   },
   31337: {
     QuestionMarkGame: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
       abi: [
         {
           inputs: [
@@ -219,6 +219,11 @@ const deployedContracts = {
               internalType: "uint256",
               name: "seed",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
             },
           ],
           name: "viewNumCorrectPerBoardPerPlayer",

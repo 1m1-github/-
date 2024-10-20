@@ -12,6 +12,10 @@ const Home: NextPage = () => {
   return (
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
+      <audio controls loop>
+        <source src="/music/theme song.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
         <div className="px-5">
           <h1 className="text-center">
             <span className="block text-2xl mb-2">Welcome to</span>

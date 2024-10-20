@@ -4,6 +4,8 @@ import { useParams } from 'next/navigation';
 import { useScaffoldReadContract, useScaffoldWriteContract } from '~~/hooks/scaffold-eth';
 import { useEffect, useState } from 'react';
 import Card from '../../../../components/Card'; // Adjust path to Card component
+import { useAccount } from "wagmi";
+
 
 const PlayRoute = () => {
   const zeroAddress = "0x0000000000000000000000000000000000000000";
@@ -25,10 +27,12 @@ const PlayRoute = () => {
 
   const { writeContractAsync: guessAsync } = useScaffoldWriteContract("QuestionMarkGame");
 
+  const { address: connectedAddress } = useAccount();
+
   const { data: numCorrect } = useScaffoldReadContract({
     contractName: "QuestionMarkGame",
     functionName: "viewNumCorrectPerBoardPerPlayer",
-    args: [seedNumber],
+    args: [seedNumber, connectedAddress],
   });
 
   const { data: winnerAddress } = useScaffoldReadContract({
@@ -216,7 +220,6 @@ const PlayRoute = () => {
 
   return (
     <div onMouseMove={handleMouseMove} className="board-container">
-      {/* <h1>Game Board for Seed: {seedString}</h1> */}
       <div className="board">
         {processedBoard.map((row, rowIndex) => (
           <div className="board-row" key={rowIndex}>
@@ -236,21 +239,36 @@ const PlayRoute = () => {
           />
         ))}
       </div>
-      <div className="right-panel">
+      <div className="right-panel flex flex-col items-center space-y-4">
         {/* <h2>Target Card</h2> */}
+        <h2></h2>
+        <div className="mt-20"></div> {/* Gap between board and targetCardNumber */}
+
         <Card digits={convertToBase4(Number(targetCardNumber))} />
 
-        {/* <h2>Number of Correct Guesses</h2> */}
-        <p>{numCorrect !== undefined ? numCorrect.toString() : "Loading..."}</p>
+        <div className="flex flex-col items-center space-y-2">
+          <img src="/images/points.png" alt="Points" className="w-24 h-24" />
+          <p className="text-lg font-semibold">
+            {numCorrect !== undefined ? numCorrect.toString() : "..."}
+          </p>
+        </div>
 
+        <div className="flex flex-col items-center space-y-2">
+          <img src="/images/winner.png" alt="Winner" className="w-24 h-24" />
+          <p className="text-lg font-semibold">
+            {winnerAddress && winnerAddress !== zeroAddress
+              ? `${winnerAddress}`
+              : "..."}
+          </p>
+        </div>
 
-        {/* <h2>Winner</h2> */}
-        <p>{winnerAddress && winnerAddress !== zeroAddress
-          ? `Winner: ${winnerAddress}`
-          : "No winner yet"}</p>
+        <audio autoPlay controls loop className="mt-4">
+          <source src="/music/theme song.mp3" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
       </div>
-    </div>
-  );
+      </div>
+      );
 };
 
 export default PlayRoute;

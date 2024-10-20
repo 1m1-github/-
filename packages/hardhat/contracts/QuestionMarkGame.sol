@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 // Useful for debugging. Remove when deploying to a live network.
 import "hardhat/console.sol";
 
-uint constant WIN_THRESHOLD = 10;
+uint constant WIN_THRESHOLD = 3;
 uint constant NUM_CARDS = 4 ** 4;
 uint constant BOARD_WIDTH = 7;
 uint constant COLUMN = 0;
@@ -21,11 +21,12 @@ contract QuestionMarkGame {
     mapping(uint => mapping(uint => mapping(address => bool))) guessedPerBoardPerTargetCardPerPlayer;
     mapping(uint => mapping(address => uint)) public numCorrectPerBoardPerPlayer;
     
-    function viewNumCorrectPerBoardPerPlayer(uint seed) public view returns (uint) {
+    function viewNumCorrectPerBoardPerPlayer(uint seed, address user) public view returns (uint) {
         console.log('viewNumCorrectPerBoardPerPlayer, seed', seed);
         console.log('viewNumCorrectPerBoardPerPlayer, msg.sender', msg.sender);
-        console.log('viewNumCorrectPerBoardPerPlayer, numCorrectPerBoardPerPlayer[seed][msg.sender]', numCorrectPerBoardPerPlayer[seed][msg.sender]);
-        return numCorrectPerBoardPerPlayer[seed][msg.sender];
+        console.log('viewNumCorrectPerBoardPerPlayer, user', user);
+        console.log('viewNumCorrectPerBoardPerPlayer, numCorrectPerBoardPerPlayer[seed][user]', numCorrectPerBoardPerPlayer[seed][user]);
+        return numCorrectPerBoardPerPlayer[seed][user];
     }
 
     function check(uint targetCard, uint[2] memory guessCoordinates) private pure {
@@ -68,6 +69,17 @@ contract QuestionMarkGame {
         }
     }
 
+    function rotateCard(uint card) private pure returns (uint rotatedCard) {
+        // clockwise
+        uint[4] memory cardValues = numberToCard(card);
+        uint[4] memory rotatedCardValues;
+        rotatedCardValues[BOTTOM_LEFT] = cardValues[BOTTOM_RIGHT];
+        rotatedCardValues[BOTTOM_RIGHT] = cardValues[TOP_RIGHT];
+        rotatedCardValues[TOP_RIGHT] = cardValues[TOP_LEFT];
+        rotatedCardValues[TOP_LEFT] = cardValues[BOTTOM_LEFT];
+        rotatedCard = cardToNumber(rotatedCardValues);
+    }
+
     function isGuessCorrect(uint[BOARD_WIDTH][BOARD_WIDTH] memory board, uint targetCard, uint[2] memory guessCoordinates) private pure returns (bool) {
         console.log('isGuessCorrect, targetCard', targetCard);
         console.log('isGuessCorrect, guessCoordinates[0]', guessCoordinates[0]);
@@ -93,7 +105,14 @@ console.log('isGuessCorrect, after check');
             // exact card
             // uint boardCard = board[guessCoordinates[COLUMN] / 2][guessCoordinates[ROW] / 2];
             uint boardCard = board[guessCoordinates[ROW] / 2][guessCoordinates[COLUMN] / 2];
-            return targetCard == boardCard;
+            if (targetCard == boardCard) return true;
+            targetCard = rotateCard(targetCard);
+            if (targetCard == boardCard) return true;
+            targetCard = rotateCard(targetCard);
+            if (targetCard == boardCard) return true;
+            targetCard = rotateCard(targetCard);
+            if (targetCard == boardCard) return true;
+            return false;
         } else if (guessCoordinates[COLUMN] % 2 == 0 && guessCoordinates[ROW] % 2 == 0) {
             console.log('isGuessCorrect, c2');
             // 4 cards
@@ -109,35 +128,49 @@ console.log('isGuessCorrect, after check');
             uint topRightCard = board[guessCoordinates[ROW] / 2][guessCoordinates[COLUMN] / 2];
             // uint topRightCard = board[guessCoordinates[COLUMN] / 2][guessCoordinates[ROW] / 2];
             uint256[4] memory topRightCardValues = numberToCard(topRightCard);
-            return bottomLeftCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_LEFT] && bottomRightCardValues[TOP_LEFT] == targetCardValues[BOTTOM_RIGHT] && topLeftCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_LEFT] && topRightCardValues[BOTTOM_LEFT] == targetCardValues[TOP_RIGHT];
+            if (bottomLeftCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_LEFT] && bottomRightCardValues[TOP_LEFT] == targetCardValues[BOTTOM_RIGHT] && topLeftCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_LEFT] && topRightCardValues[BOTTOM_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (bottomLeftCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_LEFT] && bottomRightCardValues[TOP_LEFT] == targetCardValues[BOTTOM_RIGHT] && topLeftCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_LEFT] && topRightCardValues[BOTTOM_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (bottomLeftCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_LEFT] && bottomRightCardValues[TOP_LEFT] == targetCardValues[BOTTOM_RIGHT] && topLeftCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_LEFT] && topRightCardValues[BOTTOM_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (bottomLeftCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_LEFT] && bottomRightCardValues[TOP_LEFT] == targetCardValues[BOTTOM_RIGHT] && topLeftCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_LEFT] && topRightCardValues[BOTTOM_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            return false;
         } else if (guessCoordinates[COLUMN] % 2 == 1 && guessCoordinates[ROW] % 2 == 0) {
             console.log('isGuessCorrect, c3');
             // 2 cards
             uint bottomCard = board[guessCoordinates[ROW] / 2-1][guessCoordinates[COLUMN] / 2];
             // uint bottomCard = board[guessCoordinates[COLUMN] / 2][guessCoordinates[ROW] / 2 - 1];
-            console.log('isGuessCorrect, guessCoordinates[COLUMN] / 2', guessCoordinates[COLUMN] / 2);
-            console.log('isGuessCorrect, guessCoordinates[ROW] / 2 - 1', guessCoordinates[ROW] / 2 - 1);
-            console.log('isGuessCorrect, board[0][0]', board[0][0]);
-            console.log('isGuessCorrect, board[1][1]', board[1][1]);
-            console.log('isGuessCorrect, board[4][0]', board[4][0]);
-            console.log('isGuessCorrect, board[4][1]', board[4][1]);
-            console.log('isGuessCorrect, board[4][2]', board[4][2]);
-            console.log('isGuessCorrect, board[4][3]', board[4][3]);
-            console.log('isGuessCorrect, board[0][1]', board[0][1]);
-            console.log('isGuessCorrect, board[0][2]', board[0][2]);
-            console.log('isGuessCorrect, board[0][3]', board[0][3]);
-            console.log('isGuessCorrect, board[0][4]', board[0][4]);
+            // console.log('isGuessCorrect, guessCoordinates[COLUMN] / 2', guessCoordinates[COLUMN] / 2);
+            // console.log('isGuessCorrect, guessCoordinates[ROW] / 2 - 1', guessCoordinates[ROW] / 2 - 1);
+            // console.log('isGuessCorrect, board[0][0]', board[0][0]);
+            // console.log('isGuessCorrect, board[1][1]', board[1][1]);
+            // console.log('isGuessCorrect, board[4][0]', board[4][0]);
+            // console.log('isGuessCorrect, board[4][1]', board[4][1]);
+            // console.log('isGuessCorrect, board[4][2]', board[4][2]);
+            // console.log('isGuessCorrect, board[4][3]', board[4][3]);
+            // console.log('isGuessCorrect, board[0][1]', board[0][1]);
+            // console.log('isGuessCorrect, board[0][2]', board[0][2]);
+            // console.log('isGuessCorrect, board[0][3]', board[0][3]);
+            // console.log('isGuessCorrect, board[0][4]', board[0][4]);
             uint256[4] memory bottomCardValues = numberToCard(bottomCard);
             uint topCard = board[guessCoordinates[ROW] / 2][guessCoordinates[COLUMN] / 2];
             // uint topCard = board[guessCoordinates[COLUMN] / 2][guessCoordinates[ROW] / 2];
             uint256[4] memory topCardValues = numberToCard(topCard);
-            console.log('isGuessCorrect, bottomCard', bottomCard);
-            console.log('isGuessCorrect, topCard', topCard);
-            console.log('isGuessCorrect, bottomCardValues[TOP_LEFT]', bottomCardValues[TOP_LEFT]);
-            console.log('isGuessCorrect, bottomCardValues[TOP_RIGHT]', bottomCardValues[TOP_RIGHT]);
-            console.log('isGuessCorrect, topCardValues[BOTTOM_LEFT]', topCardValues[BOTTOM_LEFT]);
-            console.log('isGuessCorrect, topCardValues[BOTTOM_RIGHT]', topCardValues[BOTTOM_RIGHT]);
-            return bottomCardValues[TOP_LEFT] == targetCardValues[BOTTOM_LEFT] && bottomCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_RIGHT] && topCardValues[BOTTOM_LEFT] == targetCardValues[TOP_LEFT] && topCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_RIGHT];
+            // console.log('isGuessCorrect, bottomCard', bottomCard);
+            // console.log('isGuessCorrect, topCard', topCard);
+            // console.log('isGuessCorrect, bottomCardValues[TOP_LEFT]', bottomCardValues[TOP_LEFT]);
+            // console.log('isGuessCorrect, bottomCardValues[TOP_RIGHT]', bottomCardValues[TOP_RIGHT]);
+            // console.log('isGuessCorrect, topCardValues[BOTTOM_LEFT]', topCardValues[BOTTOM_LEFT]);
+            // console.log('isGuessCorrect, topCardValues[BOTTOM_RIGHT]', topCardValues[BOTTOM_RIGHT]);
+            if (bottomCardValues[TOP_LEFT] == targetCardValues[BOTTOM_LEFT] && bottomCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_RIGHT] && topCardValues[BOTTOM_LEFT] == targetCardValues[TOP_LEFT] && topCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (bottomCardValues[TOP_LEFT] == targetCardValues[BOTTOM_LEFT] && bottomCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_RIGHT] && topCardValues[BOTTOM_LEFT] == targetCardValues[TOP_LEFT] && topCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (bottomCardValues[TOP_LEFT] == targetCardValues[BOTTOM_LEFT] && bottomCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_RIGHT] && topCardValues[BOTTOM_LEFT] == targetCardValues[TOP_LEFT] && topCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (bottomCardValues[TOP_LEFT] == targetCardValues[BOTTOM_LEFT] && bottomCardValues[TOP_RIGHT] == targetCardValues[BOTTOM_RIGHT] && topCardValues[BOTTOM_LEFT] == targetCardValues[TOP_LEFT] && topCardValues[BOTTOM_RIGHT] == targetCardValues[TOP_RIGHT]) return true;
+            return false;
         } else {
             console.log('isGuessCorrect, c4');
             // 2 cards
@@ -147,7 +180,14 @@ console.log('isGuessCorrect, after check');
             uint rightCard = board[guessCoordinates[ROW] / 2][guessCoordinates[COLUMN] / 2];
             // uint rightCard = board[guessCoordinates[COLUMN] / 2][guessCoordinates[ROW] / 2];
             uint256[4] memory rightCardValues = numberToCard(rightCard);
-            return leftCardValues[BOTTOM_RIGHT] == targetCardValues[BOTTOM_LEFT] && rightCardValues[BOTTOM_LEFT] == targetCardValues[BOTTOM_RIGHT] && leftCardValues[TOP_RIGHT] == targetCardValues[TOP_LEFT] && rightCardValues[TOP_LEFT] == targetCardValues[TOP_RIGHT];
+            if (leftCardValues[BOTTOM_RIGHT] == targetCardValues[BOTTOM_LEFT] && rightCardValues[BOTTOM_LEFT] == targetCardValues[BOTTOM_RIGHT] && leftCardValues[TOP_RIGHT] == targetCardValues[TOP_LEFT] && rightCardValues[TOP_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (leftCardValues[BOTTOM_RIGHT] == targetCardValues[BOTTOM_LEFT] && rightCardValues[BOTTOM_LEFT] == targetCardValues[BOTTOM_RIGHT] && leftCardValues[TOP_RIGHT] == targetCardValues[TOP_LEFT] && rightCardValues[TOP_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (leftCardValues[BOTTOM_RIGHT] == targetCardValues[BOTTOM_LEFT] && rightCardValues[BOTTOM_LEFT] == targetCardValues[BOTTOM_RIGHT] && leftCardValues[TOP_RIGHT] == targetCardValues[TOP_LEFT] && rightCardValues[TOP_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            targetCard = rotateCard(targetCard);
+            if (leftCardValues[BOTTOM_RIGHT] == targetCardValues[BOTTOM_LEFT] && rightCardValues[BOTTOM_LEFT] == targetCardValues[BOTTOM_RIGHT] && leftCardValues[TOP_RIGHT] == targetCardValues[TOP_LEFT] && rightCardValues[TOP_LEFT] == targetCardValues[TOP_RIGHT]) return true;
+            return false;
         }
     }
 
