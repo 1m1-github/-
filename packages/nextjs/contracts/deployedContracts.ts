@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   545: {
     QuestionMarkGame: {
-      address: "0xb1463d8BA1908464B0A193269baD7313b97c2Cf5",
+      address: "0x04F57ED591636042fAa09aC33861EB0f23C4ae6e",
       abi: [
         {
           inputs: [
@@ -18,8 +18,33 @@ const deployedContracts = {
             },
           ],
           name: "claimWin",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256[4]",
+              name: "arr",
+              type: "uint256[4]",
+            },
+          ],
+          name: "countUnique",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
         {
@@ -60,8 +85,33 @@ const deployedContracts = {
             },
           ],
           name: "guess",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "maxNumCorrectPerBoard",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -94,6 +144,11 @@ const deployedContracts = {
               internalType: "uint256",
               name: "seed",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
             },
           ],
           name: "viewNumCorrectPerBoardPerPlayer",
@@ -132,7 +187,7 @@ const deployedContracts = {
   },
   31337: {
     QuestionMarkGame: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
       abi: [
         {
           inputs: [
@@ -143,8 +198,33 @@ const deployedContracts = {
             },
           ],
           name: "claimWin",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256[4]",
+              name: "arr",
+              type: "uint256[4]",
+            },
+          ],
+          name: "countUnique",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
         {
@@ -185,8 +265,33 @@ const deployedContracts = {
             },
           ],
           name: "guess",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "maxNumCorrectPerBoard",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -262,7 +367,7 @@ const deployedContracts = {
   },
   11155111: {
     QuestionMarkGame: {
-      address: "0x1266931A43d8784388D75affBcF9EB4328E02607",
+      address: "0xEff1a745450fA2eCEe1f84991dCD09DbC73cF483",
       abi: [
         {
           inputs: [
@@ -273,8 +378,33 @@ const deployedContracts = {
             },
           ],
           name: "claimWin",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256[4]",
+              name: "arr",
+              type: "uint256[4]",
+            },
+          ],
+          name: "countUnique",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
         {
@@ -315,8 +445,33 @@ const deployedContracts = {
             },
           ],
           name: "guess",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "maxNumCorrectPerBoard",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -349,6 +504,11 @@ const deployedContracts = {
               internalType: "uint256",
               name: "seed",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
             },
           ],
           name: "viewNumCorrectPerBoardPerPlayer",
@@ -387,7 +547,7 @@ const deployedContracts = {
   },
   37084624: {
     QuestionMarkGame: {
-      address: "0x1266931A43d8784388D75affBcF9EB4328E02607",
+      address: "0x19604C37bc3C06ff64c5eFBAcB3155efB34aA02e",
       abi: [
         {
           inputs: [
@@ -398,8 +558,33 @@ const deployedContracts = {
             },
           ],
           name: "claimWin",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256[4]",
+              name: "arr",
+              type: "uint256[4]",
+            },
+          ],
+          name: "countUnique",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
         {
@@ -440,8 +625,33 @@ const deployedContracts = {
             },
           ],
           name: "guess",
-          outputs: [],
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "maxNumCorrectPerBoard",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -474,6 +684,11 @@ const deployedContracts = {
               internalType: "uint256",
               name: "seed",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
             },
           ],
           name: "viewNumCorrectPerBoardPerPlayer",

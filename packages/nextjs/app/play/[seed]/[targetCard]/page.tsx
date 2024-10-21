@@ -26,6 +26,7 @@ const PlayRoute = () => {
   });
 
   const { writeContractAsync: guessAsync } = useScaffoldWriteContract("QuestionMarkGame");
+  const { writeContractAsync: claimWinAsync } = useScaffoldWriteContract("QuestionMarkGame");
 
   const { address: connectedAddress } = useAccount();
 
@@ -40,7 +41,15 @@ const PlayRoute = () => {
     functionName: "winnerPerBoard",
     args: [seedNumber],
   });
+  console.log('winnerAddress', winnerAddress);
 
+  const { data: maxNumCorrectPerBoard } = useScaffoldReadContract({
+    contractName: "QuestionMarkGame",
+    functionName: "maxNumCorrectPerBoard",
+    args: [seedNumber],
+  });
+  console.log('maxNumCorrectPerBoard', maxNumCorrectPerBoard);
+  const musicFilePath = maxNumCorrectPerBoard?.valueOf() < 9 ? "/music/theme song.mp3" : "/music/opium.mp3";
 
   const [processedBoard, setProcessedBoard] = useState<number[][][]>([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -122,16 +131,33 @@ const PlayRoute = () => {
     const guessCoordinates: [bigint, bigint] = [BigInt(x), BigInt(y)];
 
     try {
-      await guessAsync({
+      const result = await guessAsync({
         functionName: "guess",
         args: [seedNumber, targetCardNumber, guessCoordinates],
       });
 
-      console.log("Guess submitted:", { seedNumber, targetCardNumber, guessCoordinates });
+      console.log("Guess submitted:", { seedNumber, targetCardNumber, guessCoordinates, result });
     } catch (error) {
       console.error("Error submitting guess:", error);
     }
   };
+
+  const handleClaimWin = async () => {
+    try {
+      if (seedNumber) {
+        const result = await claimWinAsync({
+          functionName: "claimWin",
+          args: [seedNumber],
+        });
+        console.log("claimWin: ", result);
+      } else {
+        console.error("Seed is missing.");
+      }
+    } catch (error) {
+      console.error("Error claiming win:", error);
+    }
+  };
+
 
   const getButtonPositions = () => {
     // Calculate button positions based on the grid and return an array of positions
@@ -254,7 +280,7 @@ const PlayRoute = () => {
         </div>
 
         <div className="flex flex-col items-center space-y-2">
-          <img src="/images/winner.png" alt="Winner" className="w-24 h-24" />
+          <img src="/images/winner.png" alt="Winner" className="w-24 h-24" onClick={handleClaimWin} />
           <p className="text-lg font-semibold">
             {winnerAddress && winnerAddress !== zeroAddress
               ? `${winnerAddress}`
@@ -263,12 +289,12 @@ const PlayRoute = () => {
         </div>
 
         <audio autoPlay controls loop className="mt-4">
-          <source src="/music/theme song.mp3" type="audio/mpeg" />
+          <source src={musicFilePath} type="audio/mpeg" />
           Your browser does not support the audio element.
         </audio>
       </div>
-      </div>
-      );
+    </div>
+  );
 };
 
 export default PlayRoute;
